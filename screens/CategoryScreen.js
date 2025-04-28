@@ -3,6 +3,7 @@ import { fetchHelper } from '../helpers/fetchHelper';
 import { View, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import ProductCard from '../components/ProductCard';
 import LoadingIndicator from '../components/LoadingIndicator';
+import { Colours } from '../constants/Colours';
 
 export default function CategoryScreen({ route, navigation }) {
   const { category } = route.params;
@@ -56,7 +57,7 @@ export default function CategoryScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colours.secondary,
     justifyContent: 'center',
     padding: 20,
   },

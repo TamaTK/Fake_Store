@@ -3,6 +3,7 @@ import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { fetchHelper } from '../helpers/fetchHelper';
 import CategoryButton from '../components/CategoryButton';
 import LoadingIndicator from '../components/LoadingIndicator';
+import { Colours } from '../constants/Colours';
 
 export default function HomeScreen({ navigation }) {
   const [categories, setCategories] = useState([]);
@@ -45,7 +46,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colours.background,
     justifyContent: 'center',
     padding: 20,
   },

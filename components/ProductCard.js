@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, View, Image, Text, StyleSheet } from 'react-native';
+import { Colours } from '../constants/Colours';
 
 const ProductCard = ({ product, onPress }) => {
   return (
@@ -20,7 +21,7 @@ const ProductCard = ({ product, onPress }) => {
 const styles = StyleSheet.create({
   productCard: {
     padding: 10,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: Colours.primary,
     marginBottom: 10,
     borderRadius: 10,
   },
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
   },
   productPrice: {
     fontSize: 16,
-    color: 'green',
+    color: Colours.success,
     marginBottom: 5,
   },
   productInfo: {

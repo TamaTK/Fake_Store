@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { toTitleCase } from '../helpers/titleHelper';
+import { Colours } from '../constants/Colours';
 
 const CategoryButton = ({ category, onPress }) =>{
   return (
@@ -13,7 +14,7 @@ const CategoryButton = ({ category, onPress }) =>{
 const styles = StyleSheet.create({
   categoryButton: {
     padding: 30,
-    backgroundColor: '#eee',
+    backgroundColor: Colours.primary,
     marginBottom: 10,
     borderRadius: 10,
     alignItems: 'center',

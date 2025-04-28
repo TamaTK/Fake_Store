@@ -1,6 +1,7 @@
 // components/ProductDetail.js
 import React from 'react';
 import { View, Text, Button, Image, StyleSheet } from 'react-native';
+import { Colours } from '../constants/Colours';
 
 const ProductDetail = ({ product }) => {
   return (
@@ -24,7 +25,7 @@ const ProductDetail = ({ product }) => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colours.secondary,
     padding: 20,
     paddingBottom: 50,
   },
