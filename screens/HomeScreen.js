@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { fetchHelper } from '../helpers/fetchHelper'; // Correct path
-import { toTitleCase } from '../helpers/titleHelper';
+import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { fetchHelper } from '../helpers/fetchHelper';  // Correct path
+import CategoryButton from '../components/CategoryButton';  // Import the new component
 
 export default function HomeScreen({ navigation }) {
   const [categories, setCategories] = useState([]);
@@ -33,12 +33,10 @@ export default function HomeScreen({ navigation }) {
       <FlatList
         data={categories}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.categoryButton}
+          <CategoryButton
+            category={item}
             onPress={() => navigation.navigate('CategoryScreen', { category: item })}
-          >
-            <Text style={styles.categoryText}>{toTitleCase(item)}</Text>
-          </TouchableOpacity>
+          />
         )}
         keyExtractor={(item) => item.toString()}
         showsVerticalScrollIndicator={false}
@@ -53,15 +51,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     padding: 20,
-  },
-  categoryButton: {
-    padding: 30,
-    backgroundColor: '#eee',
-    marginBottom: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  categoryText: {
-    fontSize: 18,
   },
 });
