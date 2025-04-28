@@ -1,23 +1,14 @@
+// screens/ProductScreen.js
 import React from 'react';
-import { View, Text, Button, Image, StyleSheet, ScrollView } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
+import ProductDetail from '../components/ProductDetail';
 
 export default function ProductScreen({ route, navigation }) {
   const { product } = route.params;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Image source={{ uri: product.image }} style={styles.productImage} />
-      <Text style={styles.productName}>{product.title}</Text>
-      <Text style={styles.productPrice}>${product.price}</Text>
-      <Text style={styles.productDescription}>{product.description}</Text>
-      <View style={styles.separator} />
-      <Text style={styles.rating}>Rating: {product.rating.rate} ({product.rating.count} reviews)</Text>
-      <View style={styles.buttonContainer}>
-        <Button 
-          title="Add to Cart" 
-          onPress={() => {}}  
-        />
-      </View>
+      <ProductDetail product={product} />
     </ScrollView>
   );
 }
@@ -28,41 +19,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 20,
     paddingBottom: 50,
-  },
-  productImage: {
-    width: '100%',
-    height: 300,
-    resizeMode: 'contain',
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  productName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  productPrice: {
-    fontSize: 20,
-    color: 'green',
-    marginBottom: 10,
-  },
-  productDescription: {
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  rating: {
-    fontSize: 16,
-    marginBottom: 20,
-    color: '#555',
-  },
-  separator: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-    marginVertical: 20,
-  },
-  buttonContainer: {
-    marginTop: 20,
-    borderRadius: 5,
-    overflow: 'hidden',
   },
 });
