@@ -1,6 +1,7 @@
 import React, { useEffect, useState} from 'react';
-import { fetchHelper } from '../fetchHelper';
+import { fetchHelper } from '../helpers/fetchHelper';
 import { View, Image, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator} from 'react-native';
+import { toTitleCase } from '../helpers/titleHelper';
 
 export default function CategoryScreen({ route, navigation }) {
     const { category } = route.params;
@@ -31,7 +32,6 @@ export default function CategoryScreen({ route, navigation }) {
 
     return (
         <View style={styles.container}>
-          <Text style={styles.header}>Products in {category}:</Text>
           
           <FlatList
             data={products}
@@ -60,11 +60,6 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       justifyContent: 'center',
       padding: 20,
-    },
-    header: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginBottom: 20,
     },
     productCard: {
       padding: 10,

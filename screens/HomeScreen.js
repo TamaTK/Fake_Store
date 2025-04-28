@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { fetchHelper } from '../fetchHelper'; // Correct path
+import { fetchHelper } from '../helpers/fetchHelper'; // Correct path
+import { toTitleCase } from '../helpers/titleHelper';
 
 export default function HomeScreen({ navigation }) {
   const [categories, setCategories] = useState([]);
@@ -36,7 +37,7 @@ export default function HomeScreen({ navigation }) {
             style={styles.categoryButton}
             onPress={() => navigation.navigate('CategoryScreen', { category: item })}
           >
-            <Text style={styles.categoryText}>{item}</Text>
+            <Text style={styles.categoryText}>{toTitleCase(item)}</Text>
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.toString()}
