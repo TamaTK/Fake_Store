@@ -20,10 +20,11 @@ const ProductCard = ({ product, onPress }) => {
 
 const styles = StyleSheet.create({
   productCard: {
-    padding: 10,
+    padding: 20,
     backgroundColor: Colours.primary,
     marginBottom: 10,
     borderRadius: 10,
+    elevation: 3,
   },
   productName: {
     fontSize: 18,

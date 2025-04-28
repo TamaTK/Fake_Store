@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 10,
     alignItems: 'center',
+    elevation: 3,
   },
   categoryText: {
     fontSize: 18,
