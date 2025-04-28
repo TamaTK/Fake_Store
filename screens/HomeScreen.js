@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { fetchHelper } from '../helpers/fetchHelper';
 import CategoryButton from '../components/CategoryButton';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 export default function HomeScreen({ navigation }) {
   const [categories, setCategories] = useState([]);
@@ -21,11 +22,7 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    return <LoadingIndicator />;
   }
 
   return (

@@ -1,10 +1,15 @@
-// screens/ProductScreen.js
+
 import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import ProductDetail from '../components/ProductDetail';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 export default function ProductScreen({ route, navigation }) {
   const { product } = route.params;
+
+  if (loading) {
+    return <LoadingIndicator />;
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
