@@ -1,8 +1,8 @@
 import React, { useEffect, useState} from 'react';
 import { fetchHelper } from '../fetchHelper';
-import { View, Image, Text, FlatList, StyleSheet, ActivityIndicator} from 'react-native';
+import { View, Image, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator} from 'react-native';
 
-export default function CategoryScreen({ route }) {
+export default function CategoryScreen({ route, navigation }) {
     const { category } = route.params;
     const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState([]);
@@ -11,7 +11,6 @@ export default function CategoryScreen({ route }) {
         const fetchProducts = async () => {
           try {
             const fetchedProducts = await fetchHelper(`https://fakestoreapi.com/products/category/${category}`);
-            console.log(fetchedProducts);
             setProducts(fetchedProducts);
           } catch (error) {
             console.error("Error fetching products:", error);
@@ -20,7 +19,7 @@ export default function CategoryScreen({ route }) {
           }
         };
         fetchProducts();
-      }, [category]);
+    }, [category]);
 
     if (loading) {
         return (
@@ -38,16 +37,22 @@ export default function CategoryScreen({ route }) {
             data={products}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <View style={styles.productCard}>
-                <Image source={{ uri: item.image }} style={{ width: 100, height: 100 }} />
-                <Text style={styles.productName}>{item.title}</Text>
-                <Text style={styles.productPrice}>${item.price}</Text>
-              </View>
+              <TouchableOpacity onPress={() => navigation.navigate('ProductScreen', { product: item })}>
+                <View style={styles.productCard}>
+                    <View style={styles.productInfo}>
+                        <Image source={{ uri: item.image }} style={styles.productImage} />
+                        <View style={styles.productDetails}>
+                            <Text style={styles.productName}>{item.title}</Text>
+                            <Text style={styles.productPrice}>${item.price}</Text>
+                        </View>
+                    </View>
+                </View>
+              </TouchableOpacity>
             )}
           />
         </View>
-      );
-    }
+    );
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -74,5 +79,21 @@ const styles = StyleSheet.create({
     productPrice: {
       fontSize: 16,
       color: 'green',
+      marginBottom: 5,
     },
-  });
+    productInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    productDetails: {
+      marginLeft: 10,
+      flex: 1,
+    },
+    productImage: {
+      width: 100,
+      height: 100,
+      borderRadius: 10,
+      marginRight: 15,
+      resizeMode: 'contain',
+    },
+});
