@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { fetchHelper } from '../helpers/fetchHelper';  // Correct path
-import CategoryButton from '../components/CategoryButton';  // Import the new component
+import { fetchHelper } from '../helpers/fetchHelper';
+import CategoryButton from '../components/CategoryButton';
 
 export default function HomeScreen({ navigation }) {
   const [categories, setCategories] = useState([]);
