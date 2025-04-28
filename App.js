@@ -1,42 +1,18 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
-import { useState, useEffect } from 'react';
-import { fetchHelper } from "./fetchHelper.js";
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen';
+import CategoryScreen from './screens/CategoryScreen';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const fetchedCategories = await fetchHelper("https://fakestoreapi.com/products/categories");
-        setCategories(fetchedCategories);
-        console.log("Categories:", fetchedCategories);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    })();
-  }, []);
-
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={categories}
-        renderItem={({ item }) => <Text>{item}</Text>}
-        keyExtractor={(item) => item.toString()}
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-      />
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Categories" component={HomeScreen} />
+        <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
