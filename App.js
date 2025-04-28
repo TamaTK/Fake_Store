@@ -11,7 +11,8 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Categories" component={HomeScreen} />
-        <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
+        <Stack.Screen name="CategoryScreen" component={CategoryScreen}
+        options={({route}) => ({title: route.params.category})} />
       </Stack.Navigator>
     </NavigationContainer>
   );
