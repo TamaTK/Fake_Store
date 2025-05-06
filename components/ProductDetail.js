@@ -1,9 +1,16 @@
-// components/ProductDetail.js
 import React from 'react';
 import { View, Text, Button, Image, StyleSheet } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { addItemToCart } from '../stores/cartSlice';
 import { Colours } from '../constants/Colours';
 
 const ProductDetail = ({ product }) => {
+  const dispatch = useDispatch();
+
+  const handleAddToCart = () => {
+    dispatch(addItemToCart(product));
+    console.log('Product added to cart:', product);
+  }
   return (
     <View style={styles.container}>
       <Image source={{ uri: product.image }} style={styles.productImage} />
@@ -15,7 +22,7 @@ const ProductDetail = ({ product }) => {
       <View style={styles.buttonContainer}>
         <Button 
           title="Add to Cart" 
-          onPress={() => {}}  
+          onPress={handleAddToCart}  
         />
       </View>
     </View>
