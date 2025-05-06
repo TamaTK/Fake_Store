@@ -1,10 +1,29 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
+import { Colours } from '../constants/Colours';
 
 export default function ShoppingCartScreen() {
+  const cartItems = useSelector((state) => state.cart.items);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Your Shopping Cart is Empty!</Text>
+      {cartItems.length === 0 ? (
+        <Text style={styles.emptyText}>Your Shopping Cart is Empty!</Text>
+      ) : (
+        <FlatList
+          data={cartItems}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.cartItem}>
+              <Text style={styles.productName}>{item.title}</Text>
+              <Text style={styles.productQuantity}>Quantity: {item.quantity}</Text>
+              <Text style={styles.productPrice}>Price: ${item.price * item.quantity}</Text>
+            </View>
+          )}
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
     </View>
   );
 }
@@ -12,12 +31,41 @@ export default function ShoppingCartScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f8f8f8',
+    backgroundColor: Colours.background,
+    padding: 20,
   },
-  text: {
+  emptyText: {
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20,
+    color: Colours.error,
+  },
+  listContainer: {
+    paddingBottom: 20,
+  },
+  cartItem: {
+    padding: 15,
+    marginBottom: 10,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  productName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  productQuantity: {
+    fontSize: 14,
+    color: '#555',
+    marginTop: 5,
+  },
+  productPrice: {
+    fontSize: 14,
+    color: 'green',
+    marginTop: 5,
   },
 });
