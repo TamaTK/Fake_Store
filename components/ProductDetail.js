@@ -1,15 +1,16 @@
 import React from 'react';
 import { View, Text, Button, Image, StyleSheet } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addItemToCart } from '../stores/cartSlice';
 import { Colours } from '../constants/Colours';
 
 const ProductDetail = ({ product }) => {
   const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
 
   const handleAddToCart = () => {
     dispatch(addItemToCart(product));
-    console.log('Product added to cart:', product);
+    console.log('Product added to cart:', cartItems);
   }
   return (
     <View style={styles.container}>
