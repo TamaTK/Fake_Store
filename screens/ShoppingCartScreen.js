@@ -6,7 +6,8 @@ import { Colours } from '../constants/Colours';
 export default function ShoppingCartScreen() {
   const cartItems = useSelector((state) => state.cart.items);
   const totalPrice = cartItems.reduce((total, item) => total + item.quantity * item.price, 0);
-
+  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  
   return (
     <View style={styles.container}>
       {cartItems.length === 0 ? (
@@ -15,6 +16,7 @@ export default function ShoppingCartScreen() {
         <>
           <View>
             <Text style={styles.productQuantity}>Total Price: ${totalPrice.toFixed(2)}</Text>
+            <Text style={styles.summaryText}>Total Items: {totalQuantity}</Text>
           </View>
           <FlatList
             data={cartItems}
