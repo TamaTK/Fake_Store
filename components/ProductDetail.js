@@ -3,14 +3,54 @@ import { View, Text, Button, Image, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { addItemToCart } from '../stores/cartSlice';
 import { Colours } from '../constants/Colours';
+import { fetchHelper } from '../helpers/fetchHelper';
 
 const ProductDetail = ({ product }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
+  const user = useSelector((state) => state.auth.user); // get user/token from Redux
 
-  const handleAddToCart = () => {
-    dispatch(addItemToCart(product));
-    console.log('Product added to cart:', cartItems);
+  const handleAddToCart = async () => {
+    if (!user || !user.token) {
+      alert('You must be signed in to add to cart.');
+      return;
+    }
+    // Fetch current cart from server
+    let serverCart = [];
+    try {
+      const response = await fetchHelper('http://10.0.2.2:3000/cart', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      if (response?.status === 'OK' && Array.isArray(response.items)) {
+        serverCart = response.items.map(item => ({ ...item, quantity: item.count }));
+      }
+    } catch {}
+    // Prepare new cart items (add or update quantity)
+    let updatedCart = [...serverCart];
+    const existing = updatedCart.find(item => item.id === product.id);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      updatedCart.push({ ...product, quantity: 1 });
+    }
+    // Send to server
+    try {
+      await fetchHelper('http://10.0.2.2:3000/cart', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({
+          items: updatedCart.map(item => ({
+            id: item.id,
+            price: item.price,
+            count: item.quantity,
+          })),
+        }),
+      });
+    } catch {}
   }
   return (
     <View style={styles.container}>

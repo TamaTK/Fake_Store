@@ -12,9 +12,8 @@ const Tab = createBottomTabNavigator();
 export default function TabNavigator() {
   const cartItems = useSelector((state) => state.cart.items);
   const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-
-  // Replace with Redux state if available
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const user = useSelector((state) => state.auth.user);
+  const isAuthenticated = !!user;
   const [isSignUp, setIsSignUp] = useState(false);
 
   // Handler to block navigation if not authenticated
@@ -64,7 +63,6 @@ export default function TabNavigator() {
           <UserProfileScreen
             isSignUp={isSignUp}
             setIsSignUp={setIsSignUp}
-            setIsAuthenticated={setIsAuthenticated}
           />
         )}
         options={{

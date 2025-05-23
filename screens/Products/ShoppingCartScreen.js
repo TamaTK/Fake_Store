@@ -1,19 +1,110 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
-import { increaseQuantity, decreaseQuantity } from '../../stores/cartSlice';
+import { useSelector } from 'react-redux';
 import { Colours } from '../../constants/Colours';
+import { fetchHelper } from '../../helpers/fetchHelper';
 
 export default function ShoppingCartScreen() {
-  const cartItems = useSelector((state) => state.cart.items);
-  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch cart from server on mount
+  useEffect(() => {
+    const fetchCart = async () => {
+      if (!user || !user.token) return;
+      setLoading(true);
+      try {
+        const response = await fetchHelper('http://10.0.2.2:3000/cart', {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+        if (response?.status === 'OK' && Array.isArray(response.items)) {
+          setCartItems(response.items.map(item => ({
+            ...item,
+            quantity: item.count, // server uses 'count', UI uses 'quantity'
+          })));
+        } else {
+          setCartItems([]);
+        }
+      } catch (err) {
+        setCartItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCart();
+  }, [user]);
+
+  // Remove item from cart
+  const removeItem = async (itemId) => {
+    const updatedCart = cartItems.filter(i => i.id !== itemId);
+    setCartItems(updatedCart);
+    try {
+      await fetchHelper('http://10.0.2.2:3000/cart', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({
+          items: updatedCart.map(i => ({ id: i.id, price: i.price, count: i.quantity })),
+        }),
+      });
+    } catch {}
+  };
+
+  // Empty the cart
+  const emptyCart = async () => {
+    setCartItems([]);
+    try {
+      await fetchHelper('http://10.0.2.2:3000/cart', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ items: [] }),
+      });
+    } catch {}
+  };
+
+  // Update quantity on server (remove if drops to 0)
+  const updateQuantity = async (itemId, delta) => {
+    const item = cartItems.find(i => i.id === itemId);
+    if (!item) return;
+    const newQuantity = item.quantity + delta;
+    let updatedCart;
+    if (newQuantity < 1) {
+      updatedCart = cartItems.filter(i => i.id !== itemId);
+    } else {
+      updatedCart = cartItems.map(i =>
+        i.id === itemId ? { ...i, quantity: newQuantity } : i
+      );
+    }
+    setCartItems(updatedCart);
+    try {
+      await fetchHelper('http://10.0.2.2:3000/cart', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({
+          items: updatedCart.map(i => ({ id: i.id, price: i.price, count: i.quantity })),
+        }),
+      });
+    } catch {}
+  };
 
   const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <View style={styles.container}>
-      {cartItems.length === 0 ? (
+      {loading ? (
+        <Text style={styles.loadingText}>Loading...</Text>
+      ) : cartItems.length === 0 ? (
         <Text style={styles.emptyText}>Your Shopping Cart is Empty!</Text>
       ) : (
         <>
@@ -32,11 +123,11 @@ export default function ShoppingCartScreen() {
                 <View style={styles.buttonContainer}>
                   <Button
                     title="+"
-                    onPress={() => dispatch(increaseQuantity(item.id))}
+                    onPress={() => updateQuantity(item.id, 1)}
                   />
                   <Button
                     title="-"
-                    onPress={() => dispatch(decreaseQuantity(item.id))}
+                    onPress={() => updateQuantity(item.id, -1)}
                   />
                 </View>
               </View>
@@ -54,6 +145,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colours.background,
     padding: 20,
+  },
+  loadingText: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 20,
   },
   emptyText: {
     fontSize: 18,

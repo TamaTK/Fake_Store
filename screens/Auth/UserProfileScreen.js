@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import SignUpScreen from './SignUpScreen';
 import SignInScreen from './SignInScreen';
 import UserProfileDetailsScreen from './UserProfileDetailsScreen';
+import { setUser, clearUser, updateUserName } from '../../stores/authSlice';
 
-export default function UserProfileScreen({ isSignUp, setIsSignUp, setIsAuthenticated }) {
-  const [user, setUser] = useState(null);
+export default function UserProfileScreen({ isSignUp, setIsSignUp }) {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
   const [showProfile, setShowProfile] = useState(false);
 
   const handleSignInSuccess = (userInfo) => {
-    setUser(userInfo);
-    setIsAuthenticated(true);
+    dispatch(setUser(userInfo));
     setShowProfile(true);
   };
   const handleSignUpSuccess = (userInfo) => {
-    setUser(userInfo);
-    setIsAuthenticated(true);
+    dispatch(setUser(userInfo));
     setShowProfile(true);
   };
   const handleSignOut = () => {
-    setUser(null);
-    setIsAuthenticated(false);
+    dispatch(clearUser());
     setShowProfile(false);
     setIsSignUp(false);
   };
   const handleUpdateUser = async (newName, newPassword) => {
     try {
-      const res = await fetch('/users/update', {
+      const res = await fetch('http://10.0.2.2:3000/users/update', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,7 +34,11 @@ export default function UserProfileScreen({ isSignUp, setIsSignUp, setIsAuthenti
         },
         body: JSON.stringify({ name: newName, password: newPassword }),
       });
-      return await res.json();
+      const result = await res.json();
+      if (result.status === 'OK') {
+        dispatch(updateUserName(newName));
+      }
+      return result;
     } catch (err) {
       return { status: 'error', message: err.message };
     }
@@ -64,7 +68,6 @@ export default function UserProfileScreen({ isSignUp, setIsSignUp, setIsAuthenti
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   profileContainer: {
