@@ -1,55 +1,51 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Colours } from '../../constants/Colours';
 import { fetchHelper } from '../../helpers/fetchHelper';
+import { setCart, increaseQuantity, decreaseQuantity } from '../../stores/cartSlice';
 
 export default function ShoppingCartScreen() {
   const user = useSelector((state) => state.auth.user);
-  const [cartItems, setCartItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const cartItems = useSelector((state) => state.cart.items);
+  const dispatch = useDispatch();
 
-  // Fetch cart from server on mount
-  useEffect(() => {
-    const fetchCart = async () => {
-      if (!user || !user.token) return;
-      setLoading(true);
-      try {
-        const response = await fetchHelper('http://10.0.2.2:3000/cart', {
-          method: 'GET',
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
-        if (response?.status === 'OK' && Array.isArray(response.items)) {
-          setCartItems(response.items.map(item => ({
-            ...item,
-            quantity: item.count, // server uses 'count', UI uses 'quantity'
-          })));
-        } else {
-          setCartItems([]);
-        }
-      } catch (err) {
-        setCartItems([]);
-      } finally {
-        setLoading(false);
+  // Fetch cart from server on mount and whenever cart changes
+  const fetchCart = async () => {
+    if (!user || !user.token) return;
+    try {
+      const response = await fetchHelper('http://10.0.2.2:3000/cart', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      if (response?.status === 'OK' && Array.isArray(response.items)) {
+        const items = response.items.map(item => ({ ...item, quantity: item.count }));
+        dispatch(setCart(items));
+      } else {
+        dispatch(setCart([]));
       }
-    };
+    } catch {
+      dispatch(setCart([]));
+    }
+  };
+
+  useEffect(() => {
     fetchCart();
+    // eslint-disable-next-line
   }, [user]);
 
-  // Update quantity on server (remove if drops to 0)
-  const updateQuantity = async (itemId, delta) => {
-    const item = cartItems.find(i => i.id === itemId);
-    if (!item) return;
-    const newQuantity = item.quantity + delta;
-    let updatedCart;
-    if (newQuantity < 1) {
-      updatedCart = cartItems.filter(i => i.id !== itemId);
-    } else {
-      updatedCart = cartItems.map(i =>
-        i.id === itemId ? { ...i, quantity: newQuantity } : i
-      );
-    }
-    setCartItems(updatedCart);
+  // Optimistic UI: update Redux first, then sync to server
+  const handleIncrease = (itemId) => {
+    dispatch(increaseQuantity(itemId));
+    syncCartToServer();
+  };
+  const handleDecrease = (itemId) => {
+    dispatch(decreaseQuantity(itemId));
+    syncCartToServer();
+  };
+  const syncCartToServer = async () => {
+    if (!user || !user.token) return;
+    const items = cartItems.map(item => ({ id: item.id, price: item.price, count: item.quantity }));
     try {
       await fetchHelper('http://10.0.2.2:3000/cart', {
         method: 'PUT',
@@ -57,9 +53,7 @@ export default function ShoppingCartScreen() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.token}`,
         },
-        body: JSON.stringify({
-          items: updatedCart.map(i => ({ id: i.id, price: i.price, count: i.quantity })),
-        }),
+        body: JSON.stringify({ items }),
       });
     } catch {}
   };
@@ -69,9 +63,7 @@ export default function ShoppingCartScreen() {
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <Text style={styles.loadingText}>Loading...</Text>
-      ) : cartItems.length === 0 ? (
+      {cartItems.length === 0 ? (
         <Text style={styles.emptyText}>Your Shopping Cart is Empty!</Text>
       ) : (
         <>
@@ -90,11 +82,11 @@ export default function ShoppingCartScreen() {
                 <View style={styles.buttonContainer}>
                   <Button
                     title="+"
-                    onPress={() => updateQuantity(item.id, 1)}
+                    onPress={() => handleIncrease(item.id)}
                   />
                   <Button
                     title="-"
-                    onPress={() => updateQuantity(item.id, -1)}
+                    onPress={() => handleDecrease(item.id)}
                   />
                 </View>
               </View>

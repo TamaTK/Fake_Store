@@ -15,26 +15,10 @@ const ProductDetail = ({ product }) => {
       alert('You must be signed in to add to cart.');
       return;
     }
-    // Fetch current cart from server
-    let serverCart = [];
-    try {
-      const response = await fetchHelper('http://10.0.2.2:3000/cart', {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
-      if (response?.status === 'OK' && Array.isArray(response.items)) {
-        serverCart = response.items.map(item => ({ ...item, quantity: item.count }));
-      }
-    } catch {}
-    // Prepare new cart items (add or update quantity)
-    let updatedCart = [...serverCart];
-    const existing = updatedCart.find(item => item.id === product.id);
-    if (existing) {
-      existing.quantity += 1;
-    } else {
-      updatedCart.push({ ...product, quantity: 1 });
-    }
-    // Send to server
+    dispatch(addItemToCart(product));
+    // Sync Redux cart to server in background
+    const state = store.getState();
+    const items = state.cart.items.map(item => ({ id: item.id, price: item.price, count: item.quantity }));
     try {
       await fetchHelper('http://10.0.2.2:3000/cart', {
         method: 'PUT',
@@ -42,13 +26,7 @@ const ProductDetail = ({ product }) => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.token}`,
         },
-        body: JSON.stringify({
-          items: updatedCart.map(item => ({
-            id: item.id,
-            price: item.price,
-            count: item.quantity,
-          })),
-        }),
+        body: JSON.stringify({ items }),
       });
     } catch {}
   }
