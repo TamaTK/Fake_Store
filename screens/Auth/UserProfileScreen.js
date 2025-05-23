@@ -1,51 +1,73 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import SignUpScreen from './SignUpScreen';
+import SignInScreen from './SignInScreen';
+import UserProfileDetailsScreen from './UserProfileDetailsScreen';
 
 export default function UserProfileScreen({ isSignUp, setIsSignUp, setIsAuthenticated }) {
+  const [user, setUser] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
+
+  const handleSignInSuccess = (userInfo) => {
+    setUser(userInfo);
+    setIsAuthenticated(true);
+    setShowProfile(true);
+  };
+  const handleSignUpSuccess = (userInfo) => {
+    setUser(userInfo);
+    setIsAuthenticated(true);
+    setShowProfile(true);
+  };
+  const handleSignOut = () => {
+    setUser(null);
+    setIsAuthenticated(false);
+    setShowProfile(false);
+    setIsSignUp(false);
+  };
+  const handleUpdateUser = async (newName, newPassword) => {
+    try {
+      const res = await fetch('/users/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ name: newName, password: newPassword }),
+      });
+      return await res.json();
+    } catch (err) {
+      return { status: 'error', message: err.message };
+    }
+  };
+
   return (
     <View style={styles.profileContainer}>
       <View style={styles.profileCard}>
-        {isSignUp ? (
-          <>
-            <Text style={styles.profileTitle}>Sign up a new user</Text>
-            {/* Add TextInputs here */}
-            <View style={styles.buttonRow}>
-              <Text onPress={() => setIsSignUp(false)} style={styles.linkText}>
-                Already have an account? <Text style={styles.linkAction}>Sign In</Text>
-              </Text>
-              <Text
-                onPress={() => { setIsAuthenticated(true); }}
-                style={[styles.linkText, styles.signUpButton]}
-              >
-                Sign Up
-              </Text>
-            </View>
-          </>
+        {showProfile && user ? (
+          <UserProfileDetailsScreen
+            user={user}
+            onSignOut={handleSignOut}
+            onUpdateUser={handleUpdateUser}
+          />
+        ) : isSignUp ? (
+          <SignUpScreen
+            onSignUpSuccess={handleSignUpSuccess}
+            onSwitchToSignIn={() => setIsSignUp(false)}
+          />
         ) : (
-          <>
-            <Text style={styles.profileTitle}>Sign in with your email and password</Text>
-            {/* Add TextInputs here */}
-            <View style={styles.buttonRow}>
-              <Text onPress={() => setIsSignUp(true)} style={styles.linkText}>
-                Don't have an account? <Text style={styles.linkAction}>Sign Up</Text>
-              </Text>
-              <Text
-                onPress={() => { setIsAuthenticated(true); }}
-                style={[styles.linkText, styles.signInButton]}
-              >
-                Sign In
-              </Text>
-            </View>
-          </>
+          <SignInScreen
+            onSignInSuccess={handleSignInSuccess}
+            onSwitchToSignUp={() => setIsSignUp(true)}
+          />
         )}
       </View>
     </View>
   );
 }
 
+
 const styles = StyleSheet.create({
   profileContainer: {
-    flex: 1,
     backgroundColor: '#f8f8f8',
     justifyContent: 'center',
     alignItems: 'center',
@@ -61,48 +83,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 2,
-    alignItems: 'center',
-  },
-  profileTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 24,
-    color: '#222',
-    textAlign: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginTop: 24,
-    width: '100%',
-    gap: 16,
-  },
-  linkText: {
-    color: '#007bff',
-    fontSize: 16,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  linkAction: {
-    color: '#28a745',
-    fontWeight: 'bold',
-  },
-  signInButton: {
-    color: '#28a745',
-    fontWeight: 'bold',
-    backgroundColor: '#e6ffe6',
-    padding: 8,
-    borderRadius: 8,
-    overflow: 'hidden',
-    marginTop: 8,
-  },
-  signUpButton: {
-    color: '#28a745',
-    fontWeight: 'bold',
-    backgroundColor: '#e6ffe6',
-    padding: 8,
-    borderRadius: 8,
-    overflow: 'hidden',
-    marginTop: 8,
+    alignItems: 'stretch',
   },
 });
