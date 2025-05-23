@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { fetchHelper } from '../helpers/fetchHelper';
-import CategoryButton from '../components/CategoryButton';
-import LoadingIndicator from '../components/LoadingIndicator';
-import { Colours } from '../constants/Colours';
+import { fetchHelper } from '../../helpers/fetchHelper';
+import CategoryButton from '../../components/CategoryButton';
+import LoadingIndicator from '../../components/LoadingIndicator';
+import { Colours } from '../../constants/Colours';
 
 export default function HomeScreen({ navigation }) {
   const [categories, setCategories] = useState([]);

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { fetchHelper } from '../helpers/fetchHelper';
+import { fetchHelper } from '../../helpers/fetchHelper';
 import { View, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import ProductCard from '../components/ProductCard';
-import LoadingIndicator from '../components/LoadingIndicator';
-import { Colours } from '../constants/Colours';
+import ProductCard from '../../components/ProductCard';
+import LoadingIndicator from '../../components/LoadingIndicator';
+import { Colours } from '../../constants/Colours';
 
 export default function CategoryScreen({ route, navigation }) {
   const { category } = route.params;

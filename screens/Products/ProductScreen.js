@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import ProductDetail from '../components/ProductDetail';
-import LoadingIndicator from '../components/LoadingIndicator';
-import { Colours } from '../constants/Colours';
+import ProductDetail from '../../components/ProductDetail';
+import LoadingIndicator from '../../components/LoadingIndicator';
+import { Colours } from '../../constants/Colours';
 
 export default function ProductScreen({ route, navigation }) {
     const [loading, setLoading] = useState(true);

@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { increaseQuantity, decreaseQuantity } from '../stores/cartSlice';
-import { Colours } from '../constants/Colours';
+import { increaseQuantity, decreaseQuantity } from '../../stores/cartSlice';
+import { Colours } from '../../constants/Colours';
 
 export default function ShoppingCartScreen() {
   const cartItems = useSelector((state) => state.cart.items);

@@ -4,10 +4,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
-import HomeScreen from './screens/HomeScreen';
-import CategoryScreen from './screens/CategoryScreen';
-import ProductScreen from './screens/ProductScreen';
-import ShoppingCartScreen from './screens/ShoppingCartScreen';
+import HomeScreen from './screens/Products/HomeScreen';
+import CategoryScreen from './screens/Products/CategoryScreen';
+import ProductScreen from './screens/Products/ProductScreen';
+import ShoppingCartScreen from './screens/Products/ShoppingCartScreen';
 import { toTitleCase } from './helpers/titleHelper';
 import { StyleSheet, View, Text, Alert } from 'react-native';
 
