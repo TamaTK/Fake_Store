@@ -36,39 +36,6 @@ export default function ShoppingCartScreen() {
     fetchCart();
   }, [user]);
 
-  // Remove item from cart
-  const removeItem = async (itemId) => {
-    const updatedCart = cartItems.filter(i => i.id !== itemId);
-    setCartItems(updatedCart);
-    try {
-      await fetchHelper('http://10.0.2.2:3000/cart', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        },
-        body: JSON.stringify({
-          items: updatedCart.map(i => ({ id: i.id, price: i.price, count: i.quantity })),
-        }),
-      });
-    } catch {}
-  };
-
-  // Empty the cart
-  const emptyCart = async () => {
-    setCartItems([]);
-    try {
-      await fetchHelper('http://10.0.2.2:3000/cart', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        },
-        body: JSON.stringify({ items: [] }),
-      });
-    } catch {}
-  };
-
   // Update quantity on server (remove if drops to 0)
   const updateQuantity = async (itemId, delta) => {
     const item = cartItems.find(i => i.id === itemId);
